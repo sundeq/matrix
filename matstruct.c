@@ -14,12 +14,10 @@ typedef struct{
 double dm_get_val(int r, int c, d_matrix dm);
 d_matrix init_d_matrix(char *csv_file, int N, int M);
 void fill_mat(double *m, char* csv_file, int nrows, int ncols);
+void print_d_matrix(int N, int M, d_matrix dm);
 
 int main(int argc, char **argv)
 {
-    int i;
-    int j;
-
     char *csv_file_1 = "example_mat_A2.csv"; 
     int N1 = 3;
     int M1 = 5;
@@ -31,11 +29,22 @@ int main(int argc, char **argv)
     d_matrix dm1 = init_d_matrix(csv_file_1, N1, M1);
     d_matrix dm2 = init_d_matrix(csv_file_2, N2, M2);
 
-    for (i = 0; i < N1; i++)
+    print_d_matrix(N1, M1, dm1);
+    printf("\n");
+    print_d_matrix(N2, M2, dm2);
+}
+
+void print_d_matrix(int N, int M, d_matrix dm)
+{
+
+    int i;
+    int j;
+
+    for (i = 0; i < N; i++)
     {
-        for (j = 0; j < M1; j++)
+        for (j = 0; j < M; j++)
 	{
-	    printf(" %f ", dm_get_val(i, j, dm1));
+	    printf(" %f ", dm_get_val(i, j, dm));
 	}
 	printf("\n");
     }
