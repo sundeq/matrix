@@ -12,9 +12,12 @@ typedef struct{
 
 
 double dm_get_val(int r, int c, d_matrix dm);
+void set_val(d_matrix dm, int row, int col, double val);
+d_matrix init_empty_d_matrix(int N, int M);
 d_matrix init_d_matrix(char *csv_file, int N, int M);
 void fill_mat(double *m, char* csv_file, int nrows, int ncols);
 void print_d_matrix(int N, int M, d_matrix dm);
+d_matrix d_mat_mul(d_matrix a, d_matrix b);
 
 int main(int argc, char **argv)
 {
@@ -25,18 +28,65 @@ int main(int argc, char **argv)
     char *csv_file_2 = "example_mat_B2.csv"; 
     int N2 = 5;
     int M2 = 3;
-    
-    d_matrix dm1 = init_d_matrix(csv_file_1, N1, M1);
-    d_matrix dm2 = init_d_matrix(csv_file_2, N2, M2);
 
-    print_d_matrix(N1, M1, dm1);
+    d_matrix a;
+    d_matrix b;
+    d_matrix c;
+    
+    a = init_d_matrix(csv_file_1, N1, M1);
+    b = init_d_matrix(csv_file_2, N2, M2);
+
+    print_d_matrix(N1, M1, a);
     printf("\n");
-    print_d_matrix(N2, M2, dm2);
+    print_d_matrix(N2, M2, b);
+    c = d_mat_mul(a, b);
+    print_d_matrix(c.N, c.M, c);
+}
+
+d_matrix d_mat_mul(d_matrix a, d_matrix b)
+{
+    int i;
+    int j;
+    int k;
+
+    int N_c = a.N;
+    int M_c = b.M;
+    int m;
+
+    double sum;
+
+    d_matrix c;
+    
+    if (a.M != b.N)
+    {
+	printf("Wrong dimensions for matrix multiplication A:%dx%d B:%dx%d", a.N, a.M, b.N, b.M);
+        exit(0);
+    }
+    else
+    {
+        m = a.M;
+    }
+    
+    c = init_empty_d_matrix(N_c, M_c);
+
+    for (i = 0; i < N_c; i++)
+    {
+        for (j = 0; j < M_c; j++)
+	{
+	    sum = 0;
+	    for (k = 0; k < m; k++)
+	    {
+                sum += dm_get_val(i, k, a) * dm_get_val(k, j, b);
+	    }
+	    dm_set_val(c, i, j, sum);
+	}
+    }
+
+    return c;
 }
 
 void print_d_matrix(int N, int M, d_matrix dm)
 {
-
     int i;
     int j;
 
@@ -48,11 +98,26 @@ void print_d_matrix(int N, int M, d_matrix dm)
 	}
 	printf("\n");
     }
+
+}
+
+void dm_set_val(d_matrix dm, int row, int col, double val)
+{
+    dm.m[row*dm.M + col] = val;
 }
 
 double dm_get_val(int r, int c, d_matrix dm)
 {
     return dm.m[r*dm.M+c];
+}
+
+d_matrix init_empty_d_matrix(int N, int M)
+{
+    d_matrix dm;
+    dm.N = N;
+    dm.M = M;
+    dm.m = (double *)malloc(sizeof(double)*N*M);
+    return dm;
 }
 
 d_matrix init_d_matrix(char *csv_file, int N, int M)
