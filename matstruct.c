@@ -12,12 +12,16 @@ typedef struct{
 
 
 double dm_get_val(int r, int c, d_matrix dm);
+void dm_set_val(d_matrix dm, int row, int col, double val);;
 void set_val(d_matrix dm, int row, int col, double val);
 d_matrix init_empty_d_matrix(int N, int M);
 d_matrix init_d_matrix(char *csv_file, int N, int M);
 void fill_mat(double *m, char* csv_file, int nrows, int ncols);
 void print_d_matrix(int N, int M, d_matrix dm);
 d_matrix d_mat_mul(d_matrix a, d_matrix b);
+d_matrix d_mat_add(d_matrix a, d_matrix b);
+d_matrix d_mat_sub(d_matrix a, d_matrix b);
+d_matrix d_mat_transpose(d_matrix a);
 
 int main(int argc, char **argv)
 {
@@ -28,10 +32,23 @@ int main(int argc, char **argv)
     char *csv_file_2 = "example_mat_B2.csv"; 
     int N2 = 5;
     int M2 = 3;
+    
+    char *csv_file_3 = "add_example_1.csv"; 
+    int N3 = 2;
+    int M3 = 2;
+
+    char *csv_file_4 = "add_example_2.csv"; 
+    int N4 = 2;
+    int M4 = 2;
 
     d_matrix a;
     d_matrix b;
     d_matrix c;
+    
+    d_matrix a2;
+    d_matrix b2;
+    d_matrix c2;
+    d_matrix aT;
     
     a = init_d_matrix(csv_file_1, N1, M1);
     b = init_d_matrix(csv_file_2, N2, M2);
@@ -40,7 +57,113 @@ int main(int argc, char **argv)
     printf("\n");
     print_d_matrix(N2, M2, b);
     c = d_mat_mul(a, b);
+    printf("\n");
     print_d_matrix(c.N, c.M, c);
+    printf("\n");
+    
+    a2 = init_d_matrix(csv_file_3, N3, M3);
+    b2 = init_d_matrix(csv_file_4, N4, M4);
+
+    print_d_matrix(N3, M3, a2);
+    printf("\n");
+    print_d_matrix(N4, M4, b2);
+    printf("\n");
+    c2 = d_mat_sub(a2, b2);
+    print_d_matrix(c2.N, c2.M, c2);
+    printf("\n");
+
+    printf("transpose of a: \n");
+    aT = d_mat_transpose(a);
+    print_d_matrix(aT.N, aT.M, aT);
+}
+
+d_matrix d_mat_transpose(d_matrix a)
+{
+    int i;
+    int j;
+
+    int N_aT = a.M;
+    int M_aT = a.N;
+
+    double val;
+
+    d_matrix aT;
+
+    aT = init_empty_d_matrix(N_aT, M_aT);
+
+    for (i = 0; i < a.N; i++)
+    {
+        for (j = 0; j < a.M; j++)
+	{
+	    val = dm_get_val(i, j, a);
+	    dm_set_val(aT, j, i, val);
+	}
+    }
+    return aT;
+}
+
+d_matrix d_mat_sub(d_matrix a, d_matrix b)
+{
+    int i;
+    int j;
+
+    int N_c = a.N;
+    int M_c = a.M;
+
+    double val;
+
+    d_matrix c;
+    
+    if (a.N != b.N || a.M != b.M)
+    {
+	printf("Wrong dimensions for matrix subtraction A:%dx%d B:%dx%d", a.N, a.M, b.N, b.M);
+        exit(0);
+    }
+    
+    c = init_empty_d_matrix(N_c, M_c);
+
+    for (i = 0; i < N_c; i++)
+    {
+        for (j = 0; j < M_c; j++)
+	{
+            val = dm_get_val(i, j, a) - dm_get_val(i, j, b);
+	    dm_set_val(c, i, j, val);
+	}
+    }
+
+    return c;
+}
+
+d_matrix d_mat_add(d_matrix a, d_matrix b)
+{
+    int i;
+    int j;
+
+    int N_c = a.N;
+    int M_c = a.M;
+
+    double val;
+
+    d_matrix c;
+    
+    if (a.N != b.N || a.M != b.M)
+    {
+	printf("Wrong dimensions for matrix addition A:%dx%d B:%dx%d", a.N, a.M, b.N, b.M);
+        exit(0);
+    }
+    
+    c = init_empty_d_matrix(N_c, M_c);
+
+    for (i = 0; i < N_c; i++)
+    {
+        for (j = 0; j < M_c; j++)
+	{
+            val = dm_get_val(i, j, a) + dm_get_val(i, j, b);
+	    dm_set_val(c, i, j, val);
+	}
+    }
+
+    return c;
 }
 
 d_matrix d_mat_mul(d_matrix a, d_matrix b)
